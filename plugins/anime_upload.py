@@ -41,7 +41,7 @@ CONTENT_TYPES = [
     ("🧸 Cartoons", "cartoon"),
     ("🎙️ FanDub", "fandub"),
 ]
-   TYPE_LABELS = {key: label for label, key in CONTENT_TYPES}
+TYPE_LABELS = {key: label for label, key in CONTENT_TYPES}
 PAGE_SIZE = 10
 
 # ------------------------------------------------------------
