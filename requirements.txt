@@ -1,0 +1,6 @@
+pyrofork
+TgCrypto
+aiohttp
+Jinja2
+pytz
+requests

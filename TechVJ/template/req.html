@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TH PLAYER</title>
+    
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    
+    <style>
+        /* Minimalist Cinematic Layout */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            background-color: #070707;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            
+            /* FIX 1: This pushes the player to the top instead of the center */
+            justify-content: flex-start; 
+            align-items: center;
+            padding-top: 5vh; /* Adds a little breathing room at the very top */
+        }
+
+        .player-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .video-title {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .video-container {
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        :root {
+            --plyr-color-main: #e11d48; 
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="player-wrapper">
+        <div class="video-title" id="videoTitle">{{file_name}}</div>
+
+        <div class="video-container">
+            <video id="player" playsinline controls>
+                <source src="{{file_url}}" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+        </div>
+    </div>
+
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Clean up the filename if it's too long
+            const titleElement = document.getElementById('videoTitle');
+            let text = titleElement.textContent;
+            if(text.length > 60) {
+                titleElement.textContent = text.slice(0, 60) + "....";
+            }
+
+            // Initialize the Player
+            const player = new Plyr('#player', {
+                controls: [
+                    'play-large',   
+                    'rewind',       
+                    'play',         
+                    'fast-forward', 
+                    'progress',     
+                    'current-time', 
+                    'duration',     
+                    'mute',         
+                    'volume',       
+                    'settings',     
+                    'pip',          
+                    'fullscreen'
+                ],
+                settings: ['quality', 'speed'], 
+                keyboard: { focused: true, global: true }
+            });
+
+            // FIX 2: Force Landscape mode when entering fullscreen
+            player.on('enterfullscreen', event => {
+                if (screen.orientation && screen.orientation.lock) {
+                    // Try to lock the screen to landscape
+                    screen.orientation.lock('landscape').catch(function(error) {
+                        console.warn('Screen orientation lock failed:', error);
+                    });
+                }
+            });
+
+            // Unlock the orientation when exiting fullscreen so the user can rotate their phone normally again
+            player.on('exitfullscreen', event => {
+                if (screen.orientation && screen.orientation.unlock) {
+                    screen.orientation.unlock();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

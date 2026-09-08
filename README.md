@@ -6,9 +6,10 @@ copy of the file-streaming server, so Fast Download links actually work.
 
 ## Commands
 - `/stats` — episode + title counts per type (anime/series/movie/cartoon/fandub)
-- `/upload_episode` — pick type → pick title → forward ONE file → the bot
-  re-uploads it to your log channel, builds the Fast Download URL, and inserts
-  it as the next episode straight into Supabase
+- `/upload_episode` — pick type → pick title → pick season → send episode
+  title → forward ONE file → the bot re-uploads it to your log channel,
+  builds the Fast Download URL, and inserts it as the next episode of that
+  season straight into Supabase
 - `/upload_bulk` — same picking flow, then forward files one after another;
   each gets its own "✅ Upload" button so nothing saves until you tap it.
   `/done` to finish.
@@ -55,7 +56,9 @@ opens the link, so it has to be reachable at your `URL` for links to work.
 ## Before you go live — please confirm
 This assumes your Supabase tables look like:
 - `content` → `id`, `title`, `type`
-- `episodes` → `id`, `content_id`, `episode_number`, `video_url`
+- `episodes` → `id`, `content_id`, `season_number`, `episode_number`, `title`, `video_url`
 
-If your real column names differ, tell me and I'll adjust the queries in
-`plugins/anime_upload.py`.
+`season_number` and `title` on `episodes` are new as of the season/episode-title
+step in `/upload_episode`. If your real column names differ (or these columns
+don't exist yet on your `episodes` table), tell me and I'll adjust the queries
+in `plugins/anime_upload.py`.
