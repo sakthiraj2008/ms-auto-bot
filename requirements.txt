@@ -4,4 +4,3 @@ aiohttp
 Jinja2
 pytz
 requests
-EOF
