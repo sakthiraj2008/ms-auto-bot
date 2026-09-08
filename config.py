@@ -61,3 +61,4 @@ PING_INTERVAL = int(environ.get("PING_INTERVAL", "1200"))  # 20 minutes
 # ------------------------------------------------------------
 SUPABASE_URL = environ.get("SUPABASE_URL", "")
 SUPABASE_SERVICE_ROLE_KEY = environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+SUPABASE_STORAGE_BUCKET = environ.get("SUPABASE_STORAGE_BUCKET", "animeverse-media")
