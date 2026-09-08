@@ -1,97 +1,63 @@
-# Don't Remove Credit Tg - @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
-# Ask Doubt on telegram @KingVJ01
-
-
 import re
-import os
 from os import environ
-from Script import script
 
 id_pattern = re.compile(r'^.\d+$')
+
+
 def is_enabled(value, default):
+    value = str(value)
     if value.lower() in ["true", "yes", "1", "enable", "y"]:
         return True
     elif value.lower() in ["false", "no", "0", "disable", "n"]:
         return False
-    else:
-        return default
-      
-# Bot Information
-API_ID = int(environ.get("API_ID", "11472991"))
-API_HASH = environ.get("API_HASH", "c78c50d54baf2173e8b3f75c359c0c72")
+    return default
+
+
+# ------------------------------------------------------------
+# Telegram bot credentials — from https://my.telegram.org (API_ID /
+# API_HASH) and @BotFather (BOT_TOKEN). All three are required.
+# ------------------------------------------------------------
+API_ID = int(environ.get("API_ID", "0"))
+API_HASH = environ.get("API_HASH", "")
 BOT_TOKEN = environ.get("BOT_TOKEN", "")
 
-PICS = (environ.get('PICS', 'https://envs.sh/rbx.jpg')).split() # Bot Start Picture
-ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '1430742022 7280715412').split()]
-BOT_USERNAME = environ.get("BOT_USERNAME", "Ani_Tubez_File_Sharing_Bot") # without @
-PORT = environ.get("PORT", "8080")
+# Telegram user IDs allowed to use /stats, /upload_episode, /upload_bulk,
+# /edit_title. Space-separated if more than one, e.g. "111111 222222".
+ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '').split()]
 
-# Clone Info :-
-CLONE_MODE = bool(environ.get('CLONE_MODE', True)) # Set True or False
+# A private Telegram channel/group the bot is an admin of. Every
+# forwarded episode file gets silently re-uploaded here first — this
+# is what the Fast Download links actually point back to.
+LOG_CHANNEL = int(environ.get("LOG_CHANNEL", "0"))
 
-# If Clone Mode Is True Then Fill All Required Variable, If False Then Don't Fill.
-CLONE_DB_URI = environ.get("CLONE_DB_URI", "mongodb+srv://sakthirajbaskaran:gqJb3gPWMc4GqhYB@ani-tubez.ctim8nc.mongodb.net/?retryWrites=true&w=majority") 
-CDB_NAME = environ.get("CDB_NAME", "clonetechvj")
+# Port the web server (which serves the Fast Download links) binds to.
+# Koyeb sets this automatically — leave PORT as-is unless Koyeb tells
+# you to use a different one.
+PORT = int(environ.get("PORT", "8080"))
 
-# Database Information
-DB_URI = environ.get("DB_URI", "mongodb+srv://KarthikMovies:KarthikUK007@cluster0.4l5byki.mongodb.net/?retryWrites=true&w=majority")
-DB_NAME = environ.get("DB_NAME", "ani-tubez")
+# Your public Koyeb URL, MUST end with a trailing slash, e.g.
+# https://your-app-name.koyeb.app/ — this is what gets prefixed onto
+# every Fast Download link.
+URL = environ.get("URL", "")
 
-# Auto Delete Information
-AUTO_DELETE_MODE = bool(environ.get('AUTO_DELETE_MODE', True)) # Set True or False
-
-# If Auto Delete Mode Is True Then Fill All Required Variable, If False Then Don't Fill.
-AUTO_DELETE = int(environ.get("AUTO_DELETE", "30")) # Time in Minutes
-AUTO_DELETE_TIME = int(environ.get("AUTO_DELETE_TIME", "1800")) # Time in Seconds
-
-# Channel Information
-LOG_CHANNEL = int(environ.get("LOG_CHANNEL", "-1002738688692"))
-
-# File Caption Information
-CUSTOM_FILE_CAPTION = environ.get("CUSTOM_FILE_CAPTION", f"{script.CAPTION}")
-BATCH_FILE_CAPTION = environ.get("BATCH_FILE_CAPTION", CUSTOM_FILE_CAPTION)
-
-# Enable - True or Disable - False
-PUBLIC_FILE_STORE = is_enabled((environ.get('PUBLIC_FILE_STORE', "True")), True)
-
-# Verify Info :-
-VERIFY_MODE = bool(environ.get('VERIFY_MODE', False)) # Set True or False
-
-# If Verify Mode Is True Then Fill All Required Variable, If False Then Don't Fill.
-SHORTLINK_URL = environ.get("SHORTLINK_URL", "api.shareus.io") # shortlink domain without https://
-SHORTLINK_API = environ.get("SHORTLINK_API", "hRPS5vvZc0OGOEUQJMJzPiojoVK2") # shortlink api
-VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/How_To_Open_Linkl") # how to open link 
-
-# Website Info:
-WEBSITE_URL_MODE = bool(environ.get('WEBSITE_URL_MODE', False)) # Set True or False
-
-# If Website Url Mode Is True Then Fill All Required Variable, If False Then Don't Fill.
-WEBSITE_URL = environ.get("WEBSITE_URL", "") # For More Information Check Video On Yt - @Tech_VJ
-
-# File Stream Config
-STREAM_MODE = bool(environ.get('STREAM_MODE', True)) # Set True or False
-
-# If Stream Mode Is True Then Fill All Required Variable, If False Then Don't Fill.
+# Multi-client streaming (extra bot tokens to spread download load
+# across). Not needed for a small admin bot — leave False.
 MULTI_CLIENT = False
 SLEEP_THRESHOLD = int(environ.get('SLEEP_THRESHOLD', '60'))
-PING_INTERVAL = int(environ.get("PING_INTERVAL", "1200"))  # 20 minutes
-if 'DYNO' in environ:
-    ON_HEROKU = True
-else:
-    ON_HEROKU = False
-URL = environ.get("URL", "https://testofvjfilter-1fa60b1b8498.herokuapp.com/")
 
-# Supabase (website database) — used by the /stats, /upload_episode,
-# /upload_bulk, /edit_title commands to write directly to the same
-# database your admin panel and website use. Deliberately no hardcoded
-# fallback here — set these as real environment variables, and use the
-# SERVICE ROLE key (not the anon/publishable one), since the bot needs
-# to write to tables that normal users can't.
+# Optional: if your Koyeb service tends to idle-sleep, set
+# KEEP_ALIVE=True to have the bot self-ping every PING_INTERVAL
+# seconds using its own URL above.
+KEEP_ALIVE = is_enabled(environ.get('KEEP_ALIVE', 'False'), False)
+PING_INTERVAL = int(environ.get("PING_INTERVAL", "1200"))  # 20 minutes
+
+# ------------------------------------------------------------
+# Supabase (your website's database) — used by /stats,
+# /upload_episode, /upload_bulk, /edit_title to read and write the
+# same tables your website's admin panel uses, and by the 6-hour
+# admin login to verify email/password against Supabase Auth. Use the
+# SERVICE ROLE key (not anon/public) — the bot needs to bypass RLS to
+# write these tables.
+# ------------------------------------------------------------
 SUPABASE_URL = environ.get("SUPABASE_URL", "")
 SUPABASE_SERVICE_ROLE_KEY = environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
-
-
-# Don't Remove Credit Tg - @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
-# Ask Doubt on telegram @KingVJ01
